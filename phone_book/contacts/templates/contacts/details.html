@@ -1,0 +1,9 @@
+{% extends "contacts/base.html" %}
+
+{% block title %}Contacts{% endblock title %}
+
+{% block content %}
+        <h3>{{ contact.first_name }} {{ contact.last_name }}</h3>
+        <p>{{ contact.phone }}</p>
+        <p>{{ contact.email }}</p>
+{% endblock content %}

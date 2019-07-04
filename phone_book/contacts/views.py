@@ -1,6 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-from .models import Person
+from django.shortcuts import render, get_object_or_404
+from .models import Person, Phone, Email
+from .forms import PersonModelForm, PhoneModelForm, EmailModelForm
 
 # Show all contacts
 def contact_list_view(request):
@@ -13,29 +14,86 @@ def contact_list_view(request):
 
     contacts = Person.objects.all() 
     for contact in contacts:
-        contact.phone = contact.phone_set.get(person=contact).phone
-        contact.email = contact.email_set.get(person=contact).email
-    
-    template = "contacts/list.html"
+        try:
+            contact.phone = contact.phone_set.get(person=contact).phone
+            contact.email = contact.email_set.get(person=contact).email
+        except Phone.DoesNotExist:
+            print("phone does not exist")
+        except Email.DoesNotExist:
+            print("email does not exist")
+
     context = {"contacts": contacts}
-    return render(request, template, context)
+    return render(request, "contacts/list.html", context)
+
 
 # Show specific contact
 def contact_detail_view(request, id):
     contact = Person.objects.get(pk=id)
-    contact.phone = contact.phone_set.get(person=contact).phone
-    contact.email = contact.email_set.get(person=contact).email
-    template = "contact/details.html"
+    try:
+            contact.phone = contact.phone_set.get(person=contact).phone
+            contact.email = contact.email_set.get(person=contact).email
+    except Phone.DoesNotExist:
+        print("phone does not exist")
+    except Email.DoesNotExist:
+        print("email does not exist")
+
     context = {"contact": contact}
-    return render(request, template, context)
+    return render(request, "contacts/details.html", context)
+
 
 # Add new contact
 def contact_add_view(request):
-    return HttpResponse("<h1>Contact Add View</h1>")
+    if request.method == 'POST':
+        person_form = PersonModelForm(request.POST or None)
+        phone_form = PhoneModelForm(request.POST or None)
+        email_form = EmailModelForm(request.POST or None)
+
+        if person_form.is_valid() and phone_form.is_valid() and email_form.is_valid():
+            person = Person.objects.create(**person_form.cleaned_data)
+            phone = Phone.objects.create(person=person, phone=phone_form.cleaned_data['phone'])
+            email = Email.objects.create(person=person, email=email_form.cleaned_data['email'])
+            
+            person_form = PersonModelForm()
+            phone_form = PhoneModelForm()
+            email_form = EmailModelForm()
+    else:
+        person_form = PersonModelForm()
+        phone_form = PhoneModelForm()
+        email_form = EmailModelForm()
+
+    context = {'person_form': person_form, 'phone_form': phone_form, 'email_form': email_form}
+    return render(request, "contacts/create.html", context)
+
 
 # Edit contact
 def contact_update_view(request, id):
-    return HttpResponse("<h1>Contact Update View</h1>")
+    try:
+        contact = Person.objects.get(pk=id)
+        contact_phone = Phone.objects.get(person=contact)
+        contact_email = Email.objects.get(person=contact)
+    except Person.DoesNotExist:
+        print("Person not exists")
+    except Phone.DoesNotExist:
+        print("Phone not exists")
+    except Email.DoesNotExist:
+        print("Email not exists")
+
+    if request.method == 'POST':
+        person_form = PersonModelForm(request.POST or None, instance=contact)
+        phone_form = PhoneModelForm(request.POST or None, instance=contact_phone)
+        email_form = EmailModelForm(request.POST or None, instance=contact_email)
+
+        if person_form.is_valid() and phone_form.is_valid() and email_form.is_valid():
+            person_form.save()
+            phone_form.save()
+            email_form.save()
+    else:
+        person_form = PersonModelForm(instance=contact)
+        phone_form = PhoneModelForm(instance=contact_phone)
+        email_form = EmailModelForm(instance=contact_email)
+    context = {'person_form': person_form, 'phone_form': phone_form, 'email_form': email_form, 'id': id}
+    return render(request, "contacts/update.html", context)
+
 
 # Delete contact
 def contact_delete_view(request, id):
