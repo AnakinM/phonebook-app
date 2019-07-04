@@ -9,7 +9,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path('', contact_list_view),
+    path('', contact_list_view, name="contact-list"),
     path('contact/<int:id>/', contact_detail_view),
     path('contact/new/', contact_add_view),
     path('contact/<int:id>/edit', contact_update_view, name="add-new-contact"),

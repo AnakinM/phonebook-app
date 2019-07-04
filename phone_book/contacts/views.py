@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Person, Phone, Email
 from .forms import PersonModelForm, PhoneModelForm, EmailModelForm
 
@@ -87,6 +87,7 @@ def contact_update_view(request, id):
             person_form.save()
             phone_form.save()
             email_form.save()
+        return redirect('contact-list')
     else:
         person_form = PersonModelForm(instance=contact)
         phone_form = PhoneModelForm(instance=contact_phone)
