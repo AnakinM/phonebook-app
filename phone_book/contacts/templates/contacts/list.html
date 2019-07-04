@@ -4,8 +4,14 @@
 
 {% block content %}
     {% for contact in contacts %}
-        <h3>{{ contact.first_name }} {{ contact.last_name }}</h3>
-        <p>{{ contact.phone }}</p>
-        <p>{{ contact.email }}</p>
+        <div class="card border-dark mb-3" style="width: 26rem;">
+            <div class="card-body">
+                <h4 class="card-title">{{ contact.first_name }} {{ contact.last_name }}</h4>
+                <p class="card-text">Phone number: {{ contact.phone }}</p>
+                <p class="card-text">Email: {{ contact.email }}</p>
+                <a href="{% url 'edit-contact' contact.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="{% url 'delete-contact' contact.pk %}" class="btn btn-secondary btn-sm">Delete</a>
+            </div>
+        </div>
     {% endfor %}
 {% endblock content %}

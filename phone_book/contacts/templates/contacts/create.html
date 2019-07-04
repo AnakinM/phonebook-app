@@ -2,12 +2,35 @@
 
 {% block title %}Add new contact{% endblock title %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
-    <form method="POST" action=".">
+    <form method="POST" action="." novalidate>
         {% csrf_token %}
-        {{ person_form.as_p }}
-        {{ phone_form.as_p }}
-        {{ email_form.as_p }}
-        <button type="submit">Submit</button>
+        <div class="form">
+                <div class="row">
+                    <div class="col-3">
+                        {{ person_form.first_name.errors }}
+                        {{ person_form.first_name|as_crispy_field }}
+                    </div>
+                    <div class="col-3">
+                        {{ person_form.last_name.errors }}
+                        {{ person_form.last_name|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{ phone_form.phone.errors }}
+                        {{ phone_form.phone|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{ email_form.email.errors }}
+                        {{ email_form.email|as_crispy_field }}
+                    </div>
+                </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
     </form>
 {% endblock content %}

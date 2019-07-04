@@ -10,8 +10,8 @@ from .views import (
 
 urlpatterns = [
     path('', contact_list_view, name="contact-list"),
-    path('contact/<int:id>/', contact_detail_view),
-    path('contact/new/', contact_add_view),
-    path('contact/<int:id>/edit', contact_update_view, name="add-new-contact"),
-    path('contact/<int:id>/delete', contact_delete_view),
+    path('contact/<int:id>/', contact_detail_view, name="contact-details"),
+    path('contact/new/', contact_add_view, name="new-contact"),
+    path('contact/<int:id>/edit', contact_update_view, name="edit-contact"),
+    path('contact/<int:id>/delete', contact_delete_view, name="delete-contact"),
 ]
