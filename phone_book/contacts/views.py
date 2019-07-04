@@ -61,6 +61,7 @@ def contact_add_view(request):
             person_form = PersonModelForm()
             phone_form = PhoneModelForm()
             email_form = EmailModelForm()
+            return redirect('contact-list')
     else:
         person_form = PersonModelForm()
         phone_form = PhoneModelForm()
@@ -72,16 +73,15 @@ def contact_add_view(request):
 
 # Edit contact
 def contact_update_view(request, id):
-    try:
-        contact = Person.objects.get(pk=id)
+    contact = Person.objects.get(pk=id)
+    if Phone.objects.filter(person=contact):
         contact_phone = Phone.objects.get(person=contact)
+    else:
+        contact_phone = Phone(person = contact, phone=None)
+    if Email.objects.filter(person=contact):
         contact_email = Email.objects.get(person=contact)
-    except Person.DoesNotExist:
-        print("Person not exists")
-    except Phone.DoesNotExist:
-        print("Phone not exists")
-    except Email.DoesNotExist:
-        print("Email not exists")
+    else:
+        contact_email = Email(person = contact, email=None)
 
     if request.method == 'POST':
         person_form = PersonModelForm(request.POST or None, instance=contact)
@@ -105,7 +105,7 @@ def contact_update_view(request, id):
 def contact_delete_view(request, id):
     contact = get_object_or_404(Person, pk=id)
     if request.method == 'POST':
-        if Phone.objects.get(person=contact) or Email.objects.get(person=contact):
+        if Phone.objects.get(person=contact).phone or Email.objects.get(person=contact).email:
             return HttpResponse("<h1>You cannot delete a person who has phone or email</h1>")
         else:
             contact.delete()
