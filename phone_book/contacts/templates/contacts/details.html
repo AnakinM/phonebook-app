@@ -3,7 +3,13 @@
 {% block title %}Contacts{% endblock title %}
 
 {% block content %}
-        <h3>{{ contact.first_name }} {{ contact.last_name }}</h3>
-        <p>{{ contact.phone }}</p>
-        <p>{{ contact.email }}</p>
+        <div class="card border-dark mb-3" style="width: 26rem;">
+                <div class="card-body">
+                        <h4 class="card-title">{{ contact.first_name }} {{ contact.last_name }}</h4>
+                        <p class="card-text">Phone number: {{ contact.phone }} {% if not contact.phone %} <a class="" href="">add</a>{% endif %}</p>
+                        <p class="card-text">Email: {{ contact.email }} {% if not contact.email %} <a class="" href="">add</a>{% endif %}</p>
+                        <a href="{% url 'edit-contact' contact.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{% url 'delete-contact' contact.pk %}" class="btn btn-secondary btn-sm">Delete</a>
+                </div>
+        </div>
 {% endblock content %}

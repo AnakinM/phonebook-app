@@ -1,0 +1,20 @@
+{% extends "contacts/base.html" %}
+
+{% block title %}Add email{% endblock title %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form method="POST" action="{% url 'set-email' id %}" novalidate>
+        {% csrf_token %}
+        <div class="form">
+            <div class="row">
+                <div class="col-6">
+                    {{ email_form.email.errors }}
+                    {{ email_form.email|as_crispy_field }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </form>
+{% endblock content %}

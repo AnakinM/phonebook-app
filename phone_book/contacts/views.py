@@ -106,6 +106,38 @@ def contact_delete_view(request, id):
             return redirect('contact-list')
     return render(request, "contacts/delete.html")
 
+def set_email(request, id):
+    person = Person.objects.get(pk=id)
+    if request.method == 'POST':
+        email_form = EmailModelForm(request.POST or None)
+
+        if email_form.is_valid():
+            email_obj = Email.objects.get(person=person)
+            email_obj.email = email_form.cleaned_data['email']
+            email_obj.save()
+            return redirect('contact-list')
+    else:
+        email_form = EmailModelForm()
+
+    context = {'email_form': email_form, "id": id}
+    return render(request, "contacts/set_email.html", context)
+
+def set_phone(request, id):
+    person = Person.objects.get(pk=id)
+    if request.method == 'POST':
+        phone_form = PhoneModelForm(request.POST or None)
+
+        if phone_form.is_valid():
+            phone_obj = Phone.objects.get(person=person)
+            phone_obj.phone = phone_form.cleaned_data['phone']
+            phone_obj.save()
+            return redirect('contact-list')
+    else:
+        phone_form = PhoneModelForm()
+
+    context = {'phone_form': phone_form, "id": id}
+    return render(request, "contacts/set_phone.html", context)
+
 def search_view(request):
     querry = request.GET['q']
     querryset = querry.split(" ")

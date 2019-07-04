@@ -1,0 +1,20 @@
+{% extends "contacts/base.html" %}
+
+{% block title %}Add phone{% endblock title %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form method="POST" action="{% url 'set-phone' id %}">
+        {% csrf_token %}
+        <div class="form">
+            <div class="row">
+                <div class="col-6">
+                    {{ phone_form.phone.errors }}
+                    {{ phone_form.phone|as_crispy_field }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </form>
+{% endblock content %}
