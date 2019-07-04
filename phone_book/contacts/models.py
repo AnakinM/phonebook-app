@@ -6,8 +6,8 @@ class Person(models.Model):
 
 class Phone(models.Model):
     person      = models.ForeignKey(Person, editable=False, on_delete=models.CASCADE)
-    phone       = models.CharField(max_length=50)
+    phone       = models.CharField(max_length=50, null=True, blank=True)
 
 class Email(models.Model):
     person      = models.ForeignKey(Person, editable=False, on_delete=models.CASCADE)
-    email       = models.EmailField()
+    email       = models.EmailField(null=True, blank=True)

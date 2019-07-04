@@ -11,12 +11,15 @@ def contact_list_view(request):
     # foreign keys being in Person). So I followed relationship "backward" like you can see down here.
     # As list of contacts is small, this loop don't steal much execution time. Yet, I'd take a different 
     # approach in designing database models to avoid making such loops.
+    # Changeing None to empty string is just for estetic view while viewing contacts.
 
     contacts = Person.objects.all() 
     for contact in contacts:
         try:
             contact.phone = contact.phone_set.get(person=contact).phone
+            if contact.phone == None: contact.phone = ""
             contact.email = contact.email_set.get(person=contact).email
+            if contact.email == None: contact.email = ""
         except Phone.DoesNotExist:
             print("phone does not exist")
         except Email.DoesNotExist:
@@ -31,7 +34,9 @@ def contact_detail_view(request, id):
     contact = Person.objects.get(pk=id)
     try:
             contact.phone = contact.phone_set.get(person=contact).phone
+            if contact.phone == None: contact.phone = ""
             contact.email = contact.email_set.get(person=contact).email
+            if contact.email == None: contact.email = ""
     except Phone.DoesNotExist:
         print("phone does not exist")
     except Email.DoesNotExist:
@@ -98,6 +103,13 @@ def contact_update_view(request, id):
 
 # Delete contact
 def contact_delete_view(request, id):
-    return HttpResponse("<h1>Contact Delete View</h1>")
+    contact = get_object_or_404(Person, pk=id)
+    if request.method == 'POST':
+        if Phone.objects.get(person=contact) or Email.objects.get(person=contact):
+            return HttpResponse("<h1>You cannot delete a person who has phone or email</h1>")
+        else:
+            contact.delete()
+            return redirect('contact-list')
+    return render(request, "contacts/delete.html")
 
 
