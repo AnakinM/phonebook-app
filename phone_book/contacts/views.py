@@ -5,13 +5,7 @@ from .forms import PersonModelForm, PhoneModelForm, EmailModelForm
 
 # Show all contacts
 def contact_list_view(request):
-    # What I did here is that I put myself a challenge to fit in, suggested in task, database models.
-    # Normally I couldn't access Phone and Email fields from Person object, as
-    # foreign key of Person is in both Phone and Email, not the other way (Phone and Email as
-    # foreign keys being in Person). So I followed relationship "backward" like you can see down here.
-    # As list of contacts is small, this loop don't steal much execution time. Yet, I'd take a different 
-    # approach in designing database models to avoid making such loops.
-    # Changeing None to empty string is just for estetic view while viewing contacts.
+    # Changing None to empty string is just for estetic view while viewing contacts.
 
     contacts = Person.objects.all() 
     for contact in contacts:
@@ -33,10 +27,10 @@ def contact_list_view(request):
 def contact_detail_view(request, id):
     contact = Person.objects.get(pk=id)
     try:
-            contact.phone = contact.phone_set.get(person=contact).phone
-            if contact.phone == None: contact.phone = ""
-            contact.email = contact.email_set.get(person=contact).email
-            if contact.email == None: contact.email = ""
+        contact.phone = contact.phone_set.get(person=contact).phone
+        if contact.phone == None: contact.phone = ""
+        contact.email = contact.email_set.get(person=contact).email
+        if contact.email == None: contact.email = ""
     except Phone.DoesNotExist:
         print("phone does not exist")
     except Email.DoesNotExist:
@@ -112,4 +106,81 @@ def contact_delete_view(request, id):
             return redirect('contact-list')
     return render(request, "contacts/delete.html")
 
+def search_view(request):
+    querry = request.GET['q']
+    querryset = querry.split(" ")
+    print(querry)
+    if len(querryset) > 1:
+        if Person.objects.filter(first_name=querryset[0], last_name=querryset[1]):
+            contacts = Person.objects.filter(first_name=querryset[0], last_name=querryset[1])
+            for contact in contacts:
+                try:
+                    contact.phone = contact.phone_set.get(person=contact).phone
+                    if contact.phone == None: contact.phone = ""
+                    contact.email = contact.email_set.get(person=contact).email
+                    if contact.email == None: contact.email = ""
+                except Phone.DoesNotExist:
+                    print("phone does not exist")
+                except Email.DoesNotExist:
+                    print("email does not exist")
+    else:
+        print("here!")
+        if Person.objects.filter(first_name=querry):
+            contacts = Person.objects.filter(first_name=querry)
+            for contact in contacts:
+                try:
+                    contact.phone = contact.phone_set.get(person=contact).phone
+                    if contact.phone == None: contact.phone = ""
+                    contact.email = contact.email_set.get(person=contact).email
+                    if contact.email == None: contact.email = ""
+                except Phone.DoesNotExist:
+                    print("phone does not exist")
+                except Email.DoesNotExist:
+                    print("email does not exist")
+        elif Person.objects.filter(last_name=querry):
+            contacts = Person.objects.filter(last_name=querry)
+            for contact in contacts:
+                try:
+                    contact.phone = contact.phone_set.get(person=contact).phone
+                    if contact.phone == None: contact.phone = ""
+                    contact.email = contact.email_set.get(person=contact).email
+                    if contact.email == None: contact.email = ""
+                except Phone.DoesNotExist:
+                    print("phone does not exist")
+                except Email.DoesNotExist:
+                    print("email does not exist")
+        elif Phone.objects.filter(phone=querry):
+            phones = Phone.objects.filter(phone=querry)
+            contacts = []
+            for element in phones:
+                contacts.append(element.person)
+            for contact in contacts:
+                try:
+                    contact.phone = contact.phone_set.get(person=contact).phone
+                    if contact.phone == None: contact.phone = ""
+                    contact.email = contact.email_set.get(person=contact).email
+                    if contact.email == None: contact.email = ""
+                except Phone.DoesNotExist:
+                    print("phone does not exist")
+                except Email.DoesNotExist:
+                    print("email does not exist")
+        elif Email.objects.filter(email=querry):
+            emails = Email.objects.filter(email=querry)
+            contacts = []
+            for element in emails:
+                contacts.append(element.person)
+            for contact in contacts:
+                try:
+                    contact.phone = contact.phone_set.get(person=contact).phone
+                    if contact.phone == None: contact.phone = ""
+                    contact.email = contact.email_set.get(person=contact).email
+                    if contact.email == None: contact.email = ""
+                except Phone.DoesNotExist:
+                    print("phone does not exist")
+                except Email.DoesNotExist:
+                    print("email does not exist")
+        else:
+            contacts = []
 
+    context = {"contacts": contacts}
+    return render(request, "contacts/list.html", context)
